@@ -3,26 +3,28 @@ package requests
 import java.nio.ByteBuffer
 import scala.concurrent.{Future, ExecutionContext}
 import scala.scalajs.js
+import scala.scalajs.js.JSConverters._
+
+import org.scalajs.dom.experimental.{BodyInit, Fetch, RequestInit, HttpMethod, ReadableStreamReader, Response}
 
 trait JsRequest[T] {
-  def post(url: String, payload: T)(implicit ec: ExecutionContext): Future[T]
+  def request(method: HttpMethod, url: String, payload: Option[T])(implicit ec: ExecutionContext): Future[T]
+
+  final def fetchData(method: HttpMethod, url: String, payload: js.UndefOr[BodyInit]): Future[Response] =
+    Fetch.fetch(url, js.Dynamic.literal("method" -> method, "body" -> payload.asInstanceOf[js.Any]).asInstanceOf[RequestInit]).toFuture
+
+  final def get(url: String)(implicit ec: ExecutionContext): Future[T] = request(HttpMethod.GET, url, None)
+  final def post(url: String, payload: T)(implicit ec: ExecutionContext): Future[T] = request(HttpMethod.GET, url, Some(payload))
 }
 
 object JsRequestBytes extends JsRequest[ByteBuffer] {
   import scala.scalajs.js.typedarray._
   import scala.scalajs.js.typedarray.TypedArrayBufferOps._
-  import org.scalajs.dom.experimental.{Fetch, RequestInit, HttpMethod, ReadableStreamReader}
 
-  def post(url: String, payload: ByteBuffer)(implicit ec: ExecutionContext): Future[ByteBuffer] = for {
-      result <- fetchData(url, method = HttpMethod.POST, payload = payload)
+  def request(method: HttpMethod, url: String, payload: Option[ByteBuffer])(implicit ec: ExecutionContext): Future[ByteBuffer] = for {
+      result <- fetchData(method, url, payload.map(_.typedArray().asInstanceOf[BodyInit]).orUndefined)
       buffers <- readBytes(result.body.getReader())
     } yield combineByteBuffers(buffers)
-
-  private def fetchData(url: String, method: HttpMethod, payload: js.UndefOr[ByteBuffer]) =
-    Fetch.fetch(
-      url,
-      js.Dynamic.literal(method = method, body = payload.map(_.typedArray())).asInstanceOf[RequestInit]
-    ).toFuture
 
   private def readBytes(reader: ReadableStreamReader[Uint8Array])(implicit ec: ExecutionContext): Future[List[ByteBuffer]] =
     reader.read().toFuture.flatMap { chunk =>
@@ -43,16 +45,17 @@ object JsRequestBytes extends JsRequest[ByteBuffer] {
 }
 
 object JsRequestJson extends JsRequest[String] {
-  import org.scalajs.dom.experimental.{Fetch, RequestInit, HttpMethod}
 
-  def post(url: String, payload: String)(implicit ec: ExecutionContext): Future[String] = for {
-      result <- fetchData(url, method = HttpMethod.POST, payload = payload)
+  def request(method: HttpMethod, url: String, payload: Option[String])(implicit ec: ExecutionContext): Future[String] = for {
+      result <- fetchData(method, url, payload.orUndefined)
       json <- result.json().toFuture
     } yield json.asInstanceOf[String]
+}
 
-  private def fetchData(url: String, method: HttpMethod, payload: js.UndefOr[String]) =
-    Fetch.fetch(
-      url,
-      js.Dynamic.literal(method = method, body = payload).asInstanceOf[RequestInit]
-    ).toFuture
+object JsRequestText extends JsRequest[String] {
+
+  def request(method: HttpMethod, url: String, payload: Option[String])(implicit ec: ExecutionContext): Future[String] = for {
+      result <- fetchData(method, url, payload.orUndefined)
+      text <- result.text().toFuture
+    } yield text.asInstanceOf[String]
 }
