@@ -5,13 +5,13 @@ inThisBuild(Seq(
 
   organization := "com.github.cornerman",
 
-  scalaVersion := "2.12.11",
+  scalaVersion := "2.12.15",
 
-  crossScalaVersions := Seq("2.12.11", "2.13.2"),
+  crossScalaVersions := Seq("2.12.15", "2.13.6"),
 ))
 
 lazy val commonSettings = Seq(
-  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full),
+  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full),
 
   scalacOptions ++= CrossVersion.partialVersion(scalaVersion.value).toList.flatMap { case (major, minor) =>
     versionBasedOptions(s"${major}.${minor}")
