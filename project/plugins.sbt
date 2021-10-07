@@ -1,6 +1,6 @@
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.7.1")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.1")
+addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.2")
 
 addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.1.20")
 
