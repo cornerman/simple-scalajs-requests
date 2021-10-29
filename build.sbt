@@ -1,5 +1,3 @@
-import Options._
-
 inThisBuild(Seq(
   version := "0.1.0-SNAPSHOT",
 
@@ -12,16 +10,9 @@ inThisBuild(Seq(
 
 lazy val commonSettings = Seq(
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full),
-
-  scalacOptions ++= CrossVersion.partialVersion(scalaVersion.value).toList.flatMap { case (major, minor) =>
-    versionBasedOptions(s"${major}.${minor}")
-  },
-  scalacOptions in (Compile, console) ~= (_.diff(badConsoleFlags)),
 )
 
 lazy val jsSettings = Seq(
-  scalacOptions ++= scalajsOptions,
-
   scalacOptions += {
     val local = baseDirectory.value.toURI
     val remote = s"https://raw.githubusercontent.com/cornerman/simple-scalajs-requests/${git.gitHeadCommit.value.get}/"
