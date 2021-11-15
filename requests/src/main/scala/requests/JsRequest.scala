@@ -5,7 +5,7 @@ import scala.concurrent.{Future, ExecutionContext}
 import scala.scalajs.js
 import scala.scalajs.js.JSConverters._
 
-import org.scalajs.dom.experimental.{BodyInit, Fetch, RequestInit, HttpMethod, ReadableStreamReader, Response, Headers}
+import org.scalajs.dom.{BodyInit, Fetch, RequestInit, HttpMethod, ReadableStreamReader, Response, Headers}
 
 trait JsRequest[T] {
   def request(method: HttpMethod, url: String, payload: Option[T], header: Map[String, String] = Map.empty)(implicit ec: ExecutionContext): Future[T]
