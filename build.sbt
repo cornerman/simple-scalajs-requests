@@ -4,20 +4,22 @@ inThisBuild(Seq(
   organization := "com.github.cornerman",
 
   scalaVersion := "2.12.15",
-
-  crossScalaVersions := Seq("2.12.15", "2.13.8"),
+  crossScalaVersions := Seq("2.12.15", "2.13.8", "3.1.1"),
 ))
 
 lazy val commonSettings = Seq(
-  addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full),
 )
 
 lazy val jsSettings = Seq(
-  scalacOptions += {
+  scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((3, _)) => Seq.empty //TODO?
+    case _ =>
+      val githubRepo    = "cornerman/simple-scalajs-requests"
     val local = baseDirectory.value.toURI
-    val remote = s"https://raw.githubusercontent.com/cornerman/simple-scalajs-requests/${git.gitHeadCommit.value.get}/"
-    s"-P:scalajs:mapSourceURI:$local->$remote"
-  }
+      val subProjectDir = baseDirectory.value.getName
+      val remote        = s"https://raw.githubusercontent.com/${githubRepo}/${git.gitHeadCommit.value.get}"
+      Seq(s"-P:scalajs:mapSourceURI:$local->$remote/${subProjectDir}/")
+  })
 )
 
 lazy val requests = project
