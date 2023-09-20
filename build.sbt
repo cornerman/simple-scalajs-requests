@@ -47,6 +47,6 @@ lazy val requests = project
     name := "simple-scalajs-requests",
 
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "2.6.0"
+      "org.scala-js" %%% "scalajs-dom" % "2.7.0"
     )
   )
