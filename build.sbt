@@ -2,7 +2,7 @@ inThisBuild(Seq(
   organization := "com.github.cornerman",
 
   scalaVersion := "2.12.17",
-  crossScalaVersions := Seq("2.12.17", "2.13.10", "3.2.2"),
+  crossScalaVersions := Seq("2.12.17", "2.13.12", "3.2.2"),
 
   licenses := Seq("MIT License" -> url("https://opensource.org/licenses/MIT")),
 
@@ -47,6 +47,6 @@ lazy val requests = project
     name := "simple-scalajs-requests",
 
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "2.3.0"
+      "org.scala-js" %%% "scalajs-dom" % "2.6.0"
     )
   )
